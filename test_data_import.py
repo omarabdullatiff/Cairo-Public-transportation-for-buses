@@ -32,10 +32,19 @@ pd.DataFrame(stops_output).to_csv(os.path.join(output_dir, 'stops.csv'), index=F
 print("Processing Routes...")
 routes_output = []
 for _, row in routes_df.iterrows():
-    routes_output.append({
-        'Origin': row['route_long_name'],
-        'Destination': row['route_long_name']
-    })
+    # Split route_long_name into origin and destination using hyphen
+    try:
+        origin, destination = row['route_long_name'].split('-', 1)
+        routes_output.append({
+            'Origin': origin.strip(),
+            'Destination': destination.strip()
+        })
+    except ValueError:
+        # If there's no hyphen, use the whole name as both origin and destination
+        routes_output.append({
+            'Origin': row['route_long_name'].strip(),
+            'Destination': row['route_long_name'].strip()
+        })
 pd.DataFrame(routes_output).to_csv(os.path.join(output_dir, 'routes.csv'), index=False)
 
 # Create dummy Drivers
